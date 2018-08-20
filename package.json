@@ -1,0 +1,10 @@
+{
+  "name": "todo-api",
+  "version": "1.0.0",
+  "description": "Todo API from the Node Course by Andrew Mead",
+  "main": "app.js",
+  "license": "MIT",
+  "dependencies": {
+    "mongodb": "^3.1.3"
+  }
+}

@@ -1,0 +1,4 @@
+node_modules/
+robomongo/
+mongo/
+mongo-data/
