@@ -1,4 +1,4 @@
-const MongoClient = require("mongodb").MongoClient;
+const { MongoClient, ObjectID } = require("mongodb");
 
 MongoClient.connect(
   "mongodb://localhost:27017/TodoApp",
@@ -22,19 +22,20 @@ MongoClient.connect(
     //   }
     // );
 
-    db.collection("Users").insertOne(
-      {
-        name: "Isaac",
-        age: 26,
-        location: "Hamilton"
-      },
-      (error, result) => {
-        if (error) {
-          return console.log("Cound not insert data");
-        }
-        console.log(JSON.stringify(result.ops, undefined, 2));
-      }
-    );
+    // db.collection("Users").insertOne(
+    //   {
+    //     name: "Isaac",
+    //     age: 26,
+    //     location: "Hamilton"
+    //   },
+    //   (error, result) => {
+    //     if (error) {
+    //       return console.log("Cound not insert data");
+    //     }
+    //     console.log(JSON.stringify(result.ops, undefined, 2));
+    //     console.log(result.ops[0]._id.getTimestamp());
+    //   }
+    // );
 
     client.close();
   }
