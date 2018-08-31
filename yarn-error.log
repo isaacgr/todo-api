@@ -2334,7 +2334,7 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 1
+  Exit signal: SIGUSR2
   Command: sh
   Arguments: -c mocha server/**/*.test.js
   Directory: /home/isaac/github/todo-api
