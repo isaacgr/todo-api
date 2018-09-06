@@ -50,6 +50,23 @@ app.get("/todos/:id", (request, response) => {
     });
 });
 
+app.delete("/todos/:id", (request, response) => {
+  const params = request.params;
+  if (!ObjectId.isValid(params.id)) {
+    return response.status(404).send({});
+  }
+  Todo.findByIdAndRemove(params.id)
+    .then(todo => {
+      if (!todo) {
+        return response.status(404).send({});
+      }
+      response.status(200).send({ deleted: todo });
+    })
+    .catch(error => {
+      return response.status(400).send(error);
+    });
+});
+
 app.listen(3000, () => {
   console.log("Server started");
 });
