@@ -7,7 +7,12 @@ const { Todo } = require("../models/todo");
 
 const todos = [
   { _id: new ObjectID(), text: "First todo" },
-  { _id: new ObjectID(), text: "Second todo" }
+  {
+    _id: new ObjectID(),
+    text: "Second todo",
+    completed: true,
+    completedAt: 333
+  }
 ];
 
 beforeEach(done => {
@@ -140,6 +145,36 @@ describe("DELETE /todos/:id", () => {
     request(app)
       .delete("/todos/123")
       .expect(404)
+      .end(done);
+  });
+});
+
+describe("PATCH /todos/:id", () => {
+  it("should update the todo", done => {
+    const id = todos[0]._id;
+    request(app)
+      .patch(`/todos/${id}`)
+      .send({ text: "updated text", completed: true })
+      .expect(200)
+      .expect(response => {
+        expect(response.body.todo.text).toBe("updated text");
+        expect(response.body.todo.completed).toBe(true);
+        expect(typeof response.body.todo.completedAt).toBe("number");
+      })
+      .end(done);
+  });
+
+  it("should clear compledAt when todo is not completed", done => {
+    const id = todos[1]._id;
+    request(app)
+      .patch(`/todos/${id}`)
+      .send({ text: "second text", completed: false })
+      .expect(200)
+      .expect(response => {
+        expect(response.body.todo.text).toBe("second text");
+        expect(response.body.todo.completed).toBe(false);
+        expect(response.body.todo.completedAt).toBeFalsy();
+      })
       .end(done);
   });
 });
