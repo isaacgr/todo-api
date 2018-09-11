@@ -21,7 +21,7 @@ npm manifest:
     "main": "app.js",
     "license": "MIT",
     "scripts": {
-      "test": "mocha server/**/*.test.js",
+      "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && mocha server/**/*.test.js",
       "test-watch": "nodemon --exec 'yarn test'"
     },
     "dependencies": {
@@ -2337,7 +2337,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: sh
-  Arguments: -c mocha server/**/*.test.js
+  Arguments: -c export NODE_ENV=test || SET "NODE_ENV=test" && mocha server/**/*.test.js
   Directory: /home/isaac/github/todo-api
   Output:
   
