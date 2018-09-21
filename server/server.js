@@ -105,10 +105,14 @@ app.patch("/todos/:id", (request, response) => {
 app.post("/users", (request, response) => {
   const body = _.pick(request.body, ["email", "password"]);
   const user = new User(body);
+
   user
     .save()
-    .then(user => {
-      response.send({ user });
+    .then(() => {
+      return user.generateAuthToken();
+    })
+    .then(token => {
+      response.header("x-auth", token).send({ user: user.toJSON() });
     })
     .catch(error => {
       response.status(400).send({ error });
