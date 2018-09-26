@@ -197,18 +197,22 @@ describe("POST /users", () => {
       .expect(200)
       .expect(response => {
         expect(response.headers["x-auth"]).toBeTruthy();
-        expect(response.body.user._id).toBeTruthy();
-        expect(response.body.user.email).toBe(email);
+        expect(response.body._id).toBeTruthy();
+        expect(response.body.email).toBe(email);
       })
       .end(error => {
         if (error) {
           return done(error);
         }
-        User.findOne({ email }).then(user => {
-          expect(user).toBeTruthy();
-          expect(user.password).not.toBe(password);
-          done();
-        });
+        User.findOne({ email })
+          .then(user => {
+            expect(user).toBeTruthy();
+            expect(user.password).not.toBe(password);
+            done();
+          })
+          .catch(error => {
+            done(error);
+          });
       });
   });
   it("should return errors if request invalid", done => {
@@ -228,5 +232,44 @@ describe("POST /users", () => {
       .send({ email, password })
       .expect(400)
       .end(done);
+  });
+});
+
+describe("POST /users/login", () => {
+  it("should return a new auth token for a valid user", done => {
+    const email = users[1].email;
+    const password = users[1].password;
+    request(app)
+      .post("/users/login")
+      .send({ email, password })
+      .expect(200)
+      .expect(response => {
+        expect(response.headers["x-auth"]).toBeTruthy();
+      })
+      .end((error, response) => {
+        if (error) {
+          return done();
+        }
+        User.findById(users[1]._id)
+          .then(user => {
+            expect(user.tokens[0]).toMatchObject({
+              _id: user.tokens[0]._id,
+              access: "auth",
+              token: response.headers["x-auth"]
+            });
+            done();
+          })
+          .catch(error => {
+            done(error);
+          });
+      });
+  });
+  it("should return a 400 for an invalid user", done => {
+    const email = users[0].email;
+    const password = users[0].password;
+    request(app)
+      .post("/users/login")
+      .expect(400)
+      .end(done());
   });
 });
