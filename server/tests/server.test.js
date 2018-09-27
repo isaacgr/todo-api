@@ -265,11 +265,42 @@ describe("POST /users/login", () => {
       });
   });
   it("should return a 400 for an invalid user", done => {
-    const email = users[0].email;
-    const password = users[0].password;
+    const email = users[1].email;
+    const password = users[1].password + "1";
     request(app)
       .post("/users/login")
+      .send({ email, password })
       .expect(400)
-      .end(done());
+      .expect(response => {
+        expect(response.headers["x-auth"]).toBeFalsy();
+      })
+      .end((error, response) => {
+        if (error) {
+          return done();
+        }
+        User.findById(users[1]._id)
+          .then(user => {
+            expect(user.tokens.length).toBe(0);
+            done();
+          })
+          .catch(error => {
+            done(error);
+          });
+      });
+  });
+});
+
+describe("DELETE /usrs/me/token", () => {
+  it("should remove auth token on logout", done => {
+    request(app)
+      .delete("/users/me/token")
+      .set("x-auth", users[0].tokens[0].token)
+      .expect(200)
+      .expect(() => {
+        User.findById(users[0]._id).then(user => {
+          expect(user.tokens.length).toBe(0);
+        });
+      })
+      .end(done);
   });
 });
