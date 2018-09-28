@@ -15,8 +15,11 @@ const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
-app.post("/todos", (request, response) => {
-  const todo = new Todo({ text: request.body.text });
+app.post("/todos", authenticate, (request, response) => {
+  const todo = new Todo({
+    text: request.body.text,
+    _creator: request.user._id
+  });
   todo.save().then(
     doc => {
       response.send(doc);
@@ -27,8 +30,10 @@ app.post("/todos", (request, response) => {
   );
 });
 
-app.get("/todos", (request, response) => {
-  Todo.find().then(
+app.get("/todos", authenticate, (request, response) => {
+  Todo.find({
+    _creator: request.user._id
+  }).then(
     todos => {
       response.send({ todos });
     },
@@ -38,12 +43,15 @@ app.get("/todos", (request, response) => {
   );
 });
 
-app.get("/todos/:id", (request, response) => {
+app.get("/todos/:id", authenticate, (request, response) => {
   const params = request.params;
   if (!ObjectId.isValid(params.id)) {
     return response.status(404).send({});
   }
-  Todo.findById(params.id)
+  Todo.findOne({
+    _id: params.id,
+    _creator: request.user._id
+  })
     .then(todo => {
       if (!todo) {
         return response.status(404).send({});
@@ -55,12 +63,15 @@ app.get("/todos/:id", (request, response) => {
     });
 });
 
-app.delete("/todos/:id", (request, response) => {
+app.delete("/todos/:id", authenticate, (request, response) => {
   const params = request.params;
   if (!ObjectId.isValid(params.id)) {
     return response.status(404).send({});
   }
-  Todo.findByIdAndRemove(params.id)
+  Todo.findOneAndRemove({
+    _id: params.id,
+    _creator: request.user._id
+  })
     .then(todo => {
       if (!todo) {
         return response.status(404).send({});
@@ -72,7 +83,7 @@ app.delete("/todos/:id", (request, response) => {
     });
 });
 
-app.patch("/todos/:id", (request, response) => {
+app.patch("/todos/:id", authenticate, (request, response) => {
   const params = request.params;
   const body = _.pick(request.body, ["text", "completed"]);
   if (!ObjectId.isValid(params.id)) {
@@ -84,8 +95,11 @@ app.patch("/todos/:id", (request, response) => {
     body.completed = false;
     body.completedAt = null;
   }
-  Todo.findByIdAndUpdate(
-    params.id,
+  Todo.findOneAndUpdate(
+    {
+      _id: params.id,
+      _creator: request.user._id
+    },
     {
       $set: body
     },

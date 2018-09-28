@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/bin/node /usr/local/bin/yarn test
+  /usr/bin/node /usr/local/bin/yarn run test
 
 PATH: 
   /home/isaac/anaconda3/bin:/home/isaac/bin:/home/isaac/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/isaac/.config/composer/vendor/bin/:/home/isaac/.config/composer/vendor/bin/:/home/isaac/.yarn/bin
